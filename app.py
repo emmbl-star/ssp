@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import requests
 import os
 from dotenv import load_dotenv
+import json
+import anthropic
 
 # -------------------------------------------------------
 # CONFIG
@@ -12,14 +14,28 @@ from dotenv import load_dotenv
 st.set_page_config(
     page_title="Startup Success Predictor",
     page_icon="🚀",
-    layout="wide"
+    layout="centered",
 )
 
+# Load data from the .env file
 load_dotenv()
 
 API_URL = "http://localhost:8000/predict"  # swap in real URL later
 USE_MOCK = True                            # set False once API is live
 HF_TOKEN = os.getenv("HF_TOKEN")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+
+# TODO: These are parameters we later on can store in a separate parameters file
+INDUSTRIES = [
+    "Software", "Mobile", "E-Commerce", "Enterprise Software",
+    "FinTech", "Biotech", "HealthTech", "EdTech", "CleanTech",
+    "Hardware", "SaaS", "AI / ML", "Other",
+]
+
+COUNTRIES = [
+    "USA", "GBR", "DEU", "FRA", "CAN", "IND", "CHN",
+    "ISR", "SWE", "NLD", "ESP", "AUS", "Other",
+]
 
 # -------------------------------------------------------
 # SESSION STATE
@@ -28,6 +44,8 @@ if "transcript" not in st.session_state:
     st.session_state.transcript = ""
 if "last_audio_hash" not in st.session_state:
     st.session_state.last_audio_hash = None
+if "extracted_fields" not in st.session_state:
+    st.session_state.extracted_fields = {}
 
 # -------------------------------------------------------
 # MOCK / API LOGIC
@@ -91,6 +109,34 @@ def transcribe(audio_bytes: bytes, content_type: str) -> str:
     except Exception as e:
         st.error(f"Transcription failed: {e}")
         return ""
+
+def extract_fields(transcript: str) -> dict: #At the moment it fills in only company name, industry, country and state code
+    try:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, timeout=10.0)
+        message = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=100,
+            messages=[{
+                "role": "user",
+                "content": (
+                    f"Extract startup info from: \"{transcript}\"\n"
+                    f"Return ONLY this JSON:\n"
+                    f"{{\"company_name\": \"<startup name or null>\","
+                    f"\"industry\": \"<one of {INDUSTRIES} or null>\","
+                    f"\"country\": \"<one of {COUNTRIES} or null>\","
+                    f"\"state_code\": \"<2-letter US state code or null>\"}}"
+                )
+            }]
+        )
+        raw = message.content[0].text.strip()
+        if "```" in raw:
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:].strip()
+        return json.loads(raw)
+    except Exception as e:
+        st.warning(f"Field extraction failed: {e}")
+        return {}
 
 # -------------------------------------------------------
 # CHART HELPERS
@@ -184,11 +230,14 @@ if audio:
         if transcript:
             st.session_state.transcript = transcript
             st.session_state.last_audio_hash = audio_hash
+            with st.spinner("Extracting startup info..."):
+                st.session_state.extracted_fields = extract_fields(transcript)
 
 if st.session_state.transcript:
     st.success(f"**Transcript:** {st.session_state.transcript}")
     if st.button("Clear transcript"):
         st.session_state.transcript = ""
+        st.session_state.extracted_fields = {}
         st.rerun()
 
 st.divider()
@@ -204,20 +253,18 @@ with st.form("prediction_form"):
 
     with col1:
         st.markdown("**General**")
-        company_name  = st.text_input("Company Name", placeholder="e.g. Le Wagon")
+        company_name = st.text_input("Company Name", value=st.session_state.extracted_fields.get("company_name") or "", placeholder="e.g. Le Wagon")
         founded_year  = st.number_input("Founded Year", min_value=1990, max_value=2025, value=2018, step=1)
-        country       = st.selectbox("Country", [
-            "USA", "GBR", "DEU", "FRA", "CAN", "IND", "CHN",
-            "ISR", "SWE", "NLD", "ESP", "AUS", "Other"
-        ]) #TODO: Check feasibility for our project as we only have US start-ups
+        extracted_country = st.session_state.extracted_fields.get("country")
+        country_index = COUNTRIES.index(extracted_country) if extracted_country in COUNTRIES else 0
+        country = st.selectbox("Country", COUNTRIES, index=country_index)
+        state_code = st.text_input("State Code", value=st.session_state.extracted_fields.get("state_code") or "", placeholder="e.g. CA")
 
     with col2:
         st.markdown("**Company Details**")
-        industry = st.selectbox("Industry", [
-            "Software", "Mobile", "E-Commerce", "Enterprise Software",
-            "FinTech", "Biotech", "HealthTech", "EdTech", "CleanTech",
-            "Hardware", "SaaS", "AI / ML", "Other"
-        ])
+        extracted_industry = st.session_state.extracted_fields.get("industry")
+        industry_index = INDUSTRIES.index(extracted_industry) if extracted_industry in INDUSTRIES else 0
+        industry = st.selectbox("Industry", INDUSTRIES, index=industry_index)
         employees = st.selectbox("Team Size", [
             "1-10", "11-50", "51-200", "201-500", "500+"
         ])
