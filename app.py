@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import requests
+import os
+from dotenv import load_dotenv
 
 # -------------------------------------------------------
 # CONFIG
@@ -13,9 +15,19 @@ st.set_page_config(
     layout="wide"
 )
 
+load_dotenv()
+
 API_URL = "http://localhost:8000/predict"  # swap in real URL later
 USE_MOCK = True                            # set False once API is live
+HF_TOKEN = os.getenv("HF_TOKEN")
 
+# -------------------------------------------------------
+# SESSION STATE
+# -------------------------------------------------------
+if "transcript" not in st.session_state:
+    st.session_state.transcript = ""
+if "last_audio_hash" not in st.session_state:
+    st.session_state.last_audio_hash = None
 
 # -------------------------------------------------------
 # MOCK / API LOGIC
@@ -59,6 +71,26 @@ def get_prediction(payload: dict) -> dict:
         st.warning(f"⚠️ API not accessible - use mock-data. ({e})")
         return mock_predict(payload)
 
+# -------------------------------------------------------
+# WHISPER / VOICE
+# -------------------------------------------------------
+def transcribe(audio_bytes: bytes, content_type: str) -> str:
+    try:
+        headers = {
+            "Authorization": f"Bearer {HF_TOKEN}",
+            "Content-Type": content_type or "audio/wav",
+        }
+        response = requests.post(
+            "https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3-turbo",
+            headers=headers,
+            data=audio_bytes,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json().get("text", "")
+    except Exception as e:
+        st.error(f"Transcription failed: {e}")
+        return ""
 
 # -------------------------------------------------------
 # CHART HELPERS
@@ -120,7 +152,6 @@ def feature_chart(features: dict):
     )
     return fig
 
-
 # -------------------------------------------------------
 # PAGE HEADER
 # -------------------------------------------------------
@@ -136,6 +167,31 @@ if USE_MOCK:
 
 st.divider()
 
+# -------------------------------------------------------
+# VOICE INPUT
+# -------------------------------------------------------
+st.subheader("🎙️ Voice Input")
+st.caption("Describe your startup out loud - we'll transcribe it for you.")
+
+audio = st.audio_input("Record your startup description")
+
+if audio:
+    audio_bytes = audio.read()
+    audio_hash = hash(audio_bytes)
+    if audio_hash != st.session_state.last_audio_hash:
+        with st.spinner("Transcribing via Whisper large-v3-turbo..."):
+            transcript = transcribe(audio_bytes, audio.type)
+        if transcript:
+            st.session_state.transcript = transcript
+            st.session_state.last_audio_hash = audio_hash
+
+if st.session_state.transcript:
+    st.success(f"**Transcript:** {st.session_state.transcript}")
+    if st.button("Clear transcript"):
+        st.session_state.transcript = ""
+        st.rerun()
+
+st.divider()
 
 # -------------------------------------------------------
 # INPUT FORM
