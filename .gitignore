@@ -4,3 +4,6 @@ raw_data/
 .envrc
 .python-version
 trash/
+rizwd/
+archive/
+__pycache__/
