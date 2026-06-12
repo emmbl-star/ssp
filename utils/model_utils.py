@@ -6,22 +6,13 @@ def load_ml_model():
     model = joblib.load('models/baseline_alpha01.pkl')
     return model
 
-def preprocess_input(funding_total_usd, funding_rounds, founded_year,first_funding_year,last_funding_year,category_list,country_code,state_code):
+def preprocess_input(input_data):
     """
     Converts raw user inputs from the UI into the format your model expects.
     """
-    # Create a DataFrame or a list in the shape your model was trained on
-    input_data = pd.DataFrame({
-        'funding_total_usd': [funding_total_usd],
-        'funding_rounds': [funding_rounds],
-        'founded_year': [founded_year],
-        'first_funding_year': [first_funding_year],
-        'last_funding_year': [last_funding_year],
-        'category_list': [category_list],
-        'country_code': [country_code],
-        'state_code': [state_code],
-    })
-    return input_data
+    # 🎨 Exclude display-only fields; wrap in list so scalar values form a single-row DataFrame
+    row = {k: v for k, v in input_data.items() if k != "company_name"}
+    return pd.DataFrame([row])
 
 def make_prediction(model, input_data):
     """
