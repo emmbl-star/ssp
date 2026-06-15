@@ -31,7 +31,6 @@ INDUSTRIES = industries()
 COUNTRIES  = countries()
 STATES     = states()
 
-
 # -------------------------------------------------------
 # SESSION STATE
 # -------------------------------------------------------
@@ -286,13 +285,12 @@ with st.form("prediction_form"):
         st.markdown("**Identity**")
         company_name = st.text_input("Company Name", value=ef.get("company_name") or "", placeholder="e.g. Le Wagon")
         _country = ef.get("country")
-        country_code = st.selectbox("Country", options=countries_sorted,
-                                    index=countries_sorted.index(_country) if _country in countries_sorted else 0)
+        country_code = st.selectbox("Country", options=COUNTRIES,
+                                    index=COUNTRIES.index(_country) if _country in COUNTRIES else 0)
         _state = ef.get("state_code")
-        state_code = st.selectbox("State", options=states_sorted,
-                                  index=states_sorted.index(_state) if _state in states_sorted else 0)
+        state_code = st.selectbox("State", options=STATES,
+                                  index=STATES.index(_state) if _state in STATES else 0)
 
-#TODO: check min value in DATASET
     with col2:
         st.markdown("**Timeline**")
         founded_year = st.number_input("Founded Year", min_value=1990, max_value=2025,
@@ -305,8 +303,8 @@ with st.form("prediction_form"):
     with col3:
         st.markdown("**Funding**")
         _cat = ef.get("industry")
-        category_list = st.selectbox("Industry", options=industries_sorted,
-                                     index=industries_sorted.index(_cat) if _cat in industries_sorted else 0)
+        category_list = st.selectbox("Industry", options=INDUSTRIES,
+                                     index=INDUSTRIES.index(_cat) if _cat in INDUSTRIES else 0)
         funding_total_usd = st.number_input("Total Funding Raised ($M)", min_value=0.0, max_value=2000.0,
                                             value=float(ef["funding_total_usd_m"]) if ef.get("funding_total_usd_m") else 5.0,
                                             step=0.5)
