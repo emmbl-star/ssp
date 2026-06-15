@@ -27,7 +27,6 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
-from fastapi import FastAPI, HTTPException
 
 
 # ============================================================
@@ -482,35 +481,24 @@ def build_startup_profile(name: str) -> Dict[str, Any]:
 
 
 # ============================================================
-# 8. FastAPI endpoint
+# 8. FastAPI endpoint (only loaded when fastapi is available)
 # ============================================================
 
-app = FastAPI(title="Startup Autofill Service (Wikipedia + Wikidata + LinkedIn)")
+try:
+    from fastapi import FastAPI, HTTPException
 
+    app = FastAPI(title="Startup Autofill Service (Wikipedia + Wikidata + LinkedIn)")
 
-@app.get("/autofill")
-def autofill_startup(name: str):
-    """
-    HTTP GET /autofill?name=<company_or_institution_name>
+    @app.get("/autofill")
+    def autofill_startup(name: str):
+        result = build_startup_profile(name)
+        if not (
+            result["sources"]["wikipedia_url"]
+            or result["sources"]["wikidata_qid"]
+            or result["sources"]["linkedin_url"]
+        ):
+            raise HTTPException(status_code=404, detail="No public data available for this name.")
+        return result
 
-    BEHAVIOR:
-    - Runs the metadata pipeline (Wikipedia + Wikidata + LinkedIn).
-    - If at least one source identifier exists (Wikipedia/Wikidata/LinkedIn),
-      we consider it a valid entity and return the result (even if some
-      profile fields are empty).
-    - If no identifiers exist at all, returns 404 with a clear message.
-    """
-    result = build_startup_profile(name)
-
-    # Require at least one public identifier to consider this a real entity.
-    if not (
-        result["sources"]["wikipedia_url"]
-        or result["sources"]["wikidata_qid"]
-        or result["sources"]["linkedin_url"]
-    ):
-        raise HTTPException(
-            status_code=404,
-            detail="No public data available for this name.",
-        )
-
-    return result
+except ImportError:
+    pass
