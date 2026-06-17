@@ -2,7 +2,6 @@
 # Used by both the Voice Input and Company Autofill sections to pre-fill the form.
 import anthropic
 import json
-import streamlit as st
 from src.config import ANTHROPIC_API_KEY
 
 
@@ -37,6 +36,5 @@ def extract_fields(transcript: str, industries: list, countries: list, states: l
             if raw.startswith("json"):
                 raw = raw[4:].strip()
         return json.loads(raw)
-    except Exception as e:
-        st.warning(f"Field extraction failed: {e}")
+    except Exception:
         return {}

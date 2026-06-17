@@ -1,0 +1,21 @@
+.intro-hero__brand {
+  padding: clamp(1.5rem, 4vh, 3rem) 0 1rem 0;
+}
+
+.intro-hero__logo {
+  display: block;
+  width: clamp(200px, 20vw, 400px);
+  height: auto;
+}
+
+.intro-hero__description p {
+  margin: 0 0 1rem !important;
+  font-size: clamp(1.3rem, 2.4vw, 1.8rem) !important; /* #font-size: clamp(1.4rem, 2.8vw, 2rem) !important;*/
+  font-weight: 600 !important; /*font-weight: 400 !important;*/
+  line-height: 1.5 !important;
+  color: #ffffff !important;
+}
+
+.intro-hero__description p:last-child {
+  margin-bottom: 0 !important;
+}

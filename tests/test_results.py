@@ -1,5 +1,5 @@
 # Tests the Results section with mock prediction data (no model or API calls needed).
-# Run from project root: streamlit run src/tests/test_results.py
+# Run from project root: streamlit run tests/test_results.py
 import streamlit as st
 from src.components.results import render_results
 

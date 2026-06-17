@@ -1,5 +1,5 @@
 # Tests the gauge and feature importance charts at all 3 probability levels.
-# Run from project root: streamlit run src/tests/test_charts.py
+# Run from project root: streamlit run tests/test_charts.py
 import streamlit as st
 from src.charts.gauge_chart import gauge_chart
 from src.charts.feature_chart import feature_chart

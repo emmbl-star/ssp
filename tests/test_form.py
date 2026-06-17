@@ -1,5 +1,5 @@
 # Tests the Company Profile form with mock pre-filled fields. Prints payload on submit.
-# Run from project root: streamlit run src/tests/test_form.py
+# Run from project root: streamlit run tests/test_form.py
 import streamlit as st
 from src.components.input_form import render_input_form
 

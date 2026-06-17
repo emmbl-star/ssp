@@ -1,0 +1,12 @@
+.brand-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.4rem;
+}
+
+.brand-mark__logo {
+  display: block;
+  width: clamp(60px, 5vw, 100px);
+  height: auto;
+}

@@ -8,8 +8,6 @@ python-dotenv
 requests
 scikit-learn==1.6.1
 streamlit
-typing
-datetime
-regex
 bs4
 fastapi
+pydantic

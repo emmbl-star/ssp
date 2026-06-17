@@ -1,22 +1,29 @@
-# app.py — config + orchestration only
+# pages/6_app_results.py — full predictor flow with insights
 import os
 from dotenv import load_dotenv
 import streamlit as st
 
-from utils.model_utils import load_ml_model
-from utils.categorical_lists import industries, countries, states
-from src.services.predictor import get_prediction
-from src.components.header import render_header
-from src.components.voice_input import render_voice_input
+# components
 from src.components.autofill import render_autofill
+from src.components.header import render_header
 from src.components.input_form import render_input_form
-from src.components.results import render_results
+from src.components.insights import render_insights
 from src.components.navigation import render_navigation
+from src.components.results import render_results
+from src.components.voice_input import render_voice_input
 
-st.set_page_config(page_title="Startup Success Predictor", page_icon="🚀", layout="wide")
+# services
+from src.services.predictor import get_prediction
+
+# utils
+from utils.categorical_lists import industries, countries, states
+from utils.model_utils import load_ml_model
+
+
+st.set_page_config(page_title="Results & Insights", page_icon="📊", layout="wide")
 load_dotenv()
 
-render_navigation("Home")
+render_navigation("Results & Insights")
 
 INDUSTRIES, COUNTRIES, STATES = industries(), countries(), states()
 
@@ -48,3 +55,4 @@ submitted, payload = render_input_form(
 if submitted:
     result = get_prediction(payload, model)
     render_results(result, payload)
+    render_insights(payload, result)

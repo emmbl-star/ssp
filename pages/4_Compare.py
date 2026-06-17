@@ -1,9 +1,14 @@
+
+import re
+
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from pathlib import Path
 
 from utils.model_utils import load_ml_model, preprocess_input, make_prediction
 from utils.categorical_lists import industries, countries, states
+from src.components.navigation import render_navigation
 
 # -------------------------------------------------------
 # CONFIG
@@ -13,6 +18,13 @@ st.set_page_config(
     page_icon="🏆",
     layout="wide",
 )
+
+render_navigation("Compare")
+
+ASSETS = Path(__file__).parent.parent / "assets"
+brand_css = (ASSETS / "css" / "brand_mark.css").read_text()
+brand_html = (ASSETS / "html" / "brand_mark.html").read_text()
+st.markdown(f"<style>{brand_css}</style>{brand_html}", unsafe_allow_html=True)
 
 INDUSTRIES = industries()
 COUNTRIES  = countries()
@@ -62,24 +74,82 @@ def get_prediction(payload: dict) -> dict:
 # PAGE HEADER
 # -------------------------------------------------------
 st.markdown("""
-<div style="text-align:center; padding:1.5rem 0 0.5rem;">
-    <div style="font-size:2.8rem; font-weight:900; color:#1e3a8a;">Startup Comparison</div>
-    <div style="color:#64748b; font-size:1rem; margin-top:0.4rem;">Compare multiple startups side-by-side &nbsp;·&nbsp; Le Wagon Bootcamp Montréal 2026</div>
+<div style="text-align:center;padding:1rem 0 2rem 0;">
+    <h1 style="margin-bottom:0;">
+        🏆 Startup Success Comparison
+    </h1>
+    <p style="font-size:18px;color:gray;">
+        Compare up to 10 startups and identify which has the highest predicted probability of success.
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
 st.divider()
 
 # -------------------------------------------------------
-# NUMBER OF COMPANIES
+# BULK STARTUP INPUT
 # -------------------------------------------------------
-num_companies = st.number_input(
-    "Number of Startups to Compare",
-    min_value=2,
-    max_value=10,
-    value=2,
-    step=1,
+uploaded_file = st.file_uploader(
+    "📂 Upload Startup CSV",
+    type=["csv"],
 )
+
+if uploaded_file is not None:
+    uploaded_df = pd.read_csv(uploaded_file)
+
+    required_columns = [
+    "company_name",
+    "category_list",
+    "funding_total_usd",
+    "country_code",
+    "state_code",
+    "funding_rounds",
+    "founded_year",
+    "first_funding_year",
+    "last_funding_year"
+]
+
+    missing_cols = [
+        col for col in required_columns
+        if col not in uploaded_df.columns
+    ]
+
+    if missing_cols:
+        st.error(
+            f"Missing required columns: {', '.join(missing_cols)}"
+        )
+        st.stop()
+
+    st.success(f"Loaded {len(uploaded_df)} startups")
+    st.dataframe(uploaded_df)
+    run_csv_comparison = st.button(
+        "🚀 Compare Uploaded Startups",
+        use_container_width=True,
+    )
+else:
+    run_csv_comparison = False
+
+startup_names_text = st.text_area(
+    "Paste Startup Names (one per line)",
+    placeholder="OpenAI\nAnthropic\nPerplexity",
+)
+
+startup_names = [
+    name.strip()
+    for name in re.split(r"[\n,]+", startup_names_text)
+    if name.strip()
+]
+
+if startup_names:
+    num_companies = min(len(startup_names), 10)
+else:
+    num_companies = st.number_input(
+        "Number of Startups to Compare",
+        min_value=2,
+        max_value=10,
+        value=2,
+        step=1,
+    )
 
 st.divider()
 
@@ -92,14 +162,16 @@ with st.form("comparison_form"):
 
     for i in range(num_companies):
 
-        st.markdown(f"### 🚀 Startup {i + 1}")
+        st.markdown(f"### 🚀 Startup {i + 1}\n---")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
             st.markdown("**Identity**")
+            default_name = startup_names[i] if startup_names and i < len(startup_names) else ""
             company_name = st.text_input(
                 "Company Name",
+                value=default_name,
                 placeholder=f"e.g. Startup {i + 1}",
                 key=f"name_{i}",
             )
@@ -167,15 +239,15 @@ with st.form("comparison_form"):
             )
 
         companies.append({
-            "company_name":      company_name or f"Startup {i + 1}",
-            "category_list":     str(category_list),
-            "funding_total_usd": float(funding_total_usd) * 1_000_000,
-            "country_code":      str(country_code),
-            "state_code":        str(state_code),
-            "funding_rounds":    int(funding_rounds),
-            "founded_year":      int(founded_year),
+            "company_name":       company_name or f"Startup {i + 1}",
+            "category_list":      str(category_list),
+            "funding_total_usd":  float(funding_total_usd) * 1_000_000,
+            "country_code":       str(country_code),
+            "state_code":         str(state_code),
+            "funding_rounds":     int(funding_rounds),
+            "founded_year":       int(founded_year),
             "first_funding_year": int(first_funding_year),
-            "last_funding_year": int(last_funding_year),
+            "last_funding_year":  int(last_funding_year),
         })
 
         st.divider()
@@ -189,7 +261,11 @@ with st.form("comparison_form"):
 # -------------------------------------------------------
 # RESULTS
 # -------------------------------------------------------
-if submitted:
+if submitted or run_csv_comparison:
+
+    # Override companies list with CSV data if applicable
+    if run_csv_comparison:
+        companies = uploaded_df.to_dict("records")
 
     comparison_results = []
 
@@ -197,9 +273,9 @@ if submitted:
         for payload in companies:
             result = get_prediction(payload)
             comparison_results.append({
-                "Company":                  payload["company_name"],
-                "Success Probability (%)":  round(result["success_probability"] * 100, 1),
-                "Risk Score (%)":           round(result["risk_score"] * 100, 1),
+                "Company":                 payload["company_name"],
+                "Success Probability (%)": round(result["success_probability"] * 100, 1),
+                "Risk Score (%)":          round(result["risk_score"] * 100, 1),
             })
 
     results_df = (
@@ -207,21 +283,67 @@ if submitted:
         .sort_values("Success Probability (%)", ascending=False)
         .reset_index(drop=True)
     )
-    results_df.index += 1  # rank starts at 1
+
+    winner = results_df.iloc[0]
+
+    st.markdown("## 🏆 Comparison Summary")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Winner", winner["Company"])
+
+    with col2:
+        st.metric("Success Probability", f"{winner['Success Probability (%)']}%")
+
+    with col3:
+        st.metric("Risk Score", f"{winner['Risk Score (%)']}%")
+
+    medals = ["🥇", "🥈", "🥉"]
+    results_df.insert(
+        0,
+        "Rank",
+        [medals[i] if i < 3 else f"#{i + 1}" for i in range(len(results_df))],
+    )
 
     st.subheader("🏆 Startup Ranking")
-    st.dataframe(results_df, use_container_width=True)
+st.dataframe(results_df, use_container_width=True)
 
-    st.subheader("📊 Comparison Chart")
+# ----------------------------------------
+# WHY DID THE WINNER SCORE HIGHER?
+# ----------------------------------------
 
-    colors = []
-    for prob in results_df["Success Probability (%)"]:
-        if prob >= 65:
-            colors.append("#2ecc71")
-        elif prob >= 45:
-            colors.append("#f39c12")
-        else:
-            colors.append("#e74c3c")
+st.subheader("🔍 Why Did The Winner Score Higher?")
+
+winner_name = winner["Company"]
+
+winner_data = next(
+    c for c in companies
+    if c["company_name"] == winner_name
+)
+
+st.success(
+    f"""
+    {winner_name} achieved the highest predicted success probability.
+
+    Key factors:
+    • Funding Raised: ${winner_data['funding_total_usd']:,.0f}
+    • Funding Rounds: {winner_data['funding_rounds']}
+    • Industry: {winner_data['category_list']}
+    • Founded Year: {winner_data['founded_year']}
+    """
+)
+
+st.subheader("📊 Comparison Chart")
+
+colors = []
+for prob in results_df["Success Probability (%)"]:
+    if prob >= 65:
+        colors.append("#2ecc71")
+    elif prob >= 45:
+        colors.append("#f39c12")
+    else:
+        colors.append("#e74c3c")
 
     fig = go.Figure(go.Bar(
         x=results_df["Success Probability (%)"],
