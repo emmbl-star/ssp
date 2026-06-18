@@ -67,8 +67,8 @@ def extract_fields(transcript: str, industries: list, countries: list, states: l
             if raw.startswith("json"):
                 raw = raw[4:].strip()
         extracted = json.loads(raw)
-    except Exception:
-        return {}
+    except Exception as e:
+        raise RuntimeError(f"Field extraction failed: {e}") from e
 
     # Match raw Claude output against actual dropdown lists
     extracted["industry"]   = _best_match(extracted.get("industry"),   industries)

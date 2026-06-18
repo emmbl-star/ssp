@@ -1,86 +1,95 @@
 # Renders the Company Profile form.
 # Returns (action, payload) where action is None | "predict" | "compare".
+import json
 import streamlit as st
+
+_FIELD_TO_KEY = {
+    "company_name":        ("frm_company_name",        str),
+    "country":             ("frm_country",             str),
+    "state_code":          ("frm_state",               str),
+    "founded_year":        ("frm_founded_year",        int),
+    "first_funding_year":  ("frm_first_funding_year",  int),
+    "last_funding_year":   ("frm_last_funding_year",   int),
+    "industry":            ("frm_industry",            str),
+    "funding_total_usd_m": ("frm_funding_total",       float),
+    "funding_rounds":      ("frm_funding_rounds",      int),
+}
+
+
+def _ef_hash(ef: dict) -> str:
+    return json.dumps(ef, sort_keys=True, default=str)
+
+
+def _init_form_state(ef: dict, industries: list, countries: list, states: list):
+    if st.session_state.get("frm_ef_hash") == _ef_hash(ef):
+        return
+    _c = ef.get("country")
+    _s = ef.get("state_code")
+    _i = ef.get("industry")
+    st.session_state.frm_company_name       = ef.get("company_name") or ""
+    st.session_state.frm_country            = _c if _c in countries else countries[0]
+    st.session_state.frm_state              = _s if _s in states else states[0]
+    st.session_state.frm_founded_year       = int(ef["founded_year"]) if ef.get("founded_year") else 2018
+    st.session_state.frm_first_funding_year = int(ef["first_funding_year"]) if ef.get("first_funding_year") else 2018
+    st.session_state.frm_last_funding_year  = int(ef["last_funding_year"]) if ef.get("last_funding_year") else 2018
+    st.session_state.frm_industry           = _i if _i in industries else industries[0]
+    st.session_state.frm_funding_total      = float(ef["funding_total_usd_m"]) if ef.get("funding_total_usd_m") else 5.0
+    st.session_state.frm_funding_rounds     = int(ef["funding_rounds"]) if ef.get("funding_rounds") else 2
+    st.session_state.frm_ef_hash            = _ef_hash(ef)
 
 
 def render_input_form(ef: dict, industries: list, countries: list, states: list):
-    st.subheader("Review company profile")
-    with st.form("prediction_form"):
-        col1, col2, col3 = st.columns(3)
+    # Must run before ANY widget renders so Streamlit accepts the state writes
+    _init_form_state(ef, industries, countries, states)
 
-        with col1:
-            st.markdown("**Identity**")
-            company_name = st.text_input(
-                "Company Name", value=ef.get("company_name") or "", placeholder="e.g. Le Wagon"
-            )
-            _country = ef.get("country")
-            country_code = st.selectbox(
-                "Country", options=countries,
-                index=countries.index(_country) if _country in countries else 0
-            )
-            _state = ef.get("state_code")
-            state_code = st.selectbox(
-                "State", options=states,
-                index=states.index(_state) if _state in states else 0
-            )
+    if "pending_voice_update" in st.session_state:
+        pending = st.session_state.pop("pending_voice_update")
+        for field, (key, typ) in _FIELD_TO_KEY.items():
+            value = pending.get(field)
+            if value is not None:
+                st.session_state[key] = typ(value)
 
-        with col2:
-            st.markdown("**Timeline**")
-            founded_year = st.number_input(
-                "Founded Year", min_value=1900, max_value=2025,
-                value=max(1900, min(int(ef["founded_year"]), 2025)) if ef.get("founded_year") else 2018, step=1
-            )
-            first_funding_year = st.number_input(
-                "First Funding Year", min_value=1900, max_value=2025,
-                value=max(1900, min(int(ef["first_funding_year"]), 2025)) if ef.get("first_funding_year") else 2018, step=1
-            )
-            last_funding_year = st.number_input(
-                "Last Funding Year", min_value=1900, max_value=2025,
-                value=max(1900, min(int(ef["last_funding_year"]), 2025)) if ef.get("last_funding_year") else 2018, step=1
-            )
+    st.subheader("Company Profile")
 
-        with col3:
-            st.markdown("**Funding**")
-            _cat = ef.get("industry")
-            category_list = st.selectbox(
-                "Industry", options=industries,
-                index=industries.index(_cat) if _cat in industries else 0
-            )
-            funding_total_usd = st.number_input(
-                "Total Funding Raised ($M)", min_value=0.0, max_value=50000.0,
-                value=min(float(ef["funding_total_usd_m"]), 50000.0) if ef.get("funding_total_usd_m") else 5.0,
-                step=0.5
-            )
-            funding_rounds = st.slider(
-                "Funding Rounds", 0, 20,
-                value=min(int(ef["funding_rounds"]), 20) if ef.get("funding_rounds") else 2
-            )
+    col1, col2, col3 = st.columns(3)
 
-            st.markdown("")
-            btn_l, btn_r = st.columns(2)
-            with btn_l:
-                compare_clicked = st.form_submit_button(
-                    "Compare startups", use_container_width=True
-                )
-            with btn_r:
-                predict_clicked = st.form_submit_button(
-                    "Predict success", use_container_width=True, type="primary"
-                )
+    with col1:
+        st.markdown("**Identity**")
+        st.text_input("Company Name", key="frm_company_name", placeholder="e.g. Le Wagon")
+        st.selectbox("Country", options=countries, key="frm_country")
+        st.selectbox("State", options=states, key="frm_state")
 
-    if not (compare_clicked or predict_clicked):
+    with col2:
+        st.markdown("**Timeline**")
+        st.number_input("Founded Year", min_value=1900, max_value=2025, step=1, key="frm_founded_year")
+        st.number_input("First Funding Year", min_value=1900, max_value=2025, step=1, key="frm_first_funding_year")
+        st.number_input("Last Funding Year", min_value=1900, max_value=2025, step=1, key="frm_last_funding_year")
+
+    with col3:
+        st.markdown("**Funding**")
+        st.selectbox("Industry", options=industries, key="frm_industry")
+        st.number_input("Total Funding Raised ($M)", min_value=0.0, max_value=50000.0, step=0.5, key="frm_funding_total")
+        st.slider("Funding Rounds", 0, 20, key="frm_funding_rounds")
+
+        st.markdown("")
+        btn_l, btn_r = st.columns(2)
+        with btn_l:
+            compare = st.button("🔍  Compare Startups", use_container_width=True)
+        with btn_r:
+            predict = st.button("⚡  Predict Success", use_container_width=True, type="primary")
+
+    if not (compare or predict):
         return None, {}
 
     payload = {
-        "company_name":       str(company_name),
-        "category_list":      str(category_list),
-        "funding_total_usd":  float(funding_total_usd) * 1_000_000,
-        "country_code":       str(country_code),
-        "state_code":         str(state_code),
-        "funding_rounds":     int(funding_rounds),
-        "founded_year":       int(founded_year),
-        "first_funding_year": int(first_funding_year),
-        "last_funding_year":  int(last_funding_year),
+        "company_name":       str(st.session_state.frm_company_name),
+        "category_list":      str(st.session_state.frm_industry),
+        "funding_total_usd":  float(st.session_state.frm_funding_total) * 1_000_000,
+        "country_code":       str(st.session_state.frm_country),
+        "state_code":         str(st.session_state.frm_state),
+        "funding_rounds":     int(st.session_state.frm_funding_rounds),
+        "founded_year":       int(st.session_state.frm_founded_year),
+        "first_funding_year": int(st.session_state.frm_first_funding_year),
+        "last_funding_year":  int(st.session_state.frm_last_funding_year),
     }
-    if compare_clicked:
-        return "compare", payload
-    return "predict", payload
+    return "compare" if compare else "predict", payload
