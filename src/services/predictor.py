@@ -26,11 +26,14 @@ def get_prediction(payload: dict, model) -> dict:
 
         top_features = dict(zip(feature_names, [float(v) for v in raw_imp]))
 
+        all_probabilities = {CLASS_LABELS[i]: float(proba[i]) for i in range(len(proba))}
+
         return {
             "predicted_class": predicted_class,
             "confidence":      confidence,
             "top_features":    top_features,
+            "all_probabilities":      all_probabilities,
         }
     except Exception as e:
         st.warning(f"⚠️ Model error - using defaults. ({e})")
-        return {"predicted_class": "Unknown", "confidence": 0.0, "top_features": {}}
+        return {"predicted_class": "Unknown", "confidence": 0.0, "top_features": {}, "all_probabilities": {}}

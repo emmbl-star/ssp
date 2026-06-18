@@ -1,5 +1,72 @@
 import streamlit as st
 
+LOGO_SVG = """<svg viewBox="0 0 674 147" fill="none" xmlns="http://www.w3.org/2000/svg"
+     role="img" aria-label="Handful logo">
+  <path d="M39.9996 126C39.9996 114.955 31.0454 106 19.9998 106C8.95422 106
+    0 114.955 0 126C0 137.046 8.95422 146 19.9998 146C31.0454 146
+    39.9996 137.046 39.9996 126Z" fill="#1C95FF"/>
+  <path d="M101 0H138V146H101V0Z" fill="#1C95FF"/>
+  <path d="M19 0H67V146H19L41.7027 72.4786L19 0Z" fill="#1C95FF"/>
+  <path d="M50.2427 66H101.243V86H50.2427V66Z" fill="#1C95FF"/>
+  <path d="M646 144V0H674V144H646Z" fill="#1C95FF"/>
+  <path d="M577.5 146C566.033 146 556.333 141.667 549.8 133.8C543.267 125.8
+    540 114.333 540 99.4V44H567.8V96.8C567.8 104.933 569.333 111.2 572.4
+    115.6C575.467 119.867 580.067 122 586.2 122C592.867 122 598 119.667
+    601.6 115C605.333 110.2 607.2 103.6 607.2 95.2V44H635.2V144H607.2V129
+    C604.267 134.067 600.267 138.133 595.2 141.2C590.267 144.133 584.833
+    146 577.5 146Z" fill="#1C95FF"/>
+  <path d="M486.4 144V33.2C486.4 23.4667 487.467 16.2667 489.6 11.6C491.867
+    6.8 495.467 3.66667 500.4 2.2C505.467 0.733333 512.133 0 520.4 0H533
+    V23.8H526C521.333 23.8 518.2 24.5333 516.6 26C515.133 27.4667 514.4
+    30.4 514.4 34.8V144H486.4ZM473 68.2V44.8H533V68.2H473Z" fill="#1C95FF"/>
+  <path d="M410.204 146.4C401.004 146.4 392.671 144.133 385.204 139.6
+    C377.871 135.067 372.071 128.867 367.804 121C363.538 113 361.404
+    104.067 361.404 94.2C361.404 84.2 363.538 75.3333 367.804 67.6
+    C372.071 59.7333 377.871 53.6 385.204 49.2C392.671 44.6667 401.004
+    42.4 410.204 42.4C417.538 42.4 423.871 43.7333 429.204 46.4C434.671
+    49.0667 439.071 52.8 442.404 57.6V0H470.404V144H442.404V130.4
+    C439.338 134.667 435.204 138.4 430.004 141.6C424.938 144.8 418.338
+    146.4 410.204 146.4ZM416.604 122C421.804 122 426.404 120.8 430.404
+    118.4C434.404 116 437.538 112.733 439.804 108.6C442.071 104.333
+    443.204 99.6 443.204 94.4C443.204 89.0667 442.071 84.3333 439.804
+    80.2C437.538 76.0667 434.404 72.8 430.404 70.4C426.404 68 421.804
+    66.8 416.604 66.8C411.538 66.8 406.938 68 402.804 70.4C398.804 72.8
+    395.671 76.0667 393.404 80.2C391.138 84.2 390.004 88.8667 390.004
+    94.2C390.004 99.5333 391.138 104.333 393.404 108.6C395.671 112.733
+    398.804 116 402.804 118.4C406.938 120.8 411.538 122 416.604 122Z"
+    fill="#1C95FF"/>
+  <path d="M250.938 144V44.8004H278.938V59.4004C282.137 54.2004 286.471
+    50.0671 291.938 47.0004C297.538 43.9337 304.071 42.4004 311.538
+    42.4004C324.071 42.4004 333.671 46.4004 340.337 54.4004C347.004
+    62.2671 350.337 73.6671 350.337 88.6004V144H322.337V91.2004
+    C322.337 83.0671 320.671 76.8671 317.337 72.6004C314.137 68.2004
+    309.004 66.0004 301.938 66.0004C295.271 66.0004 289.737 68.4004
+    285.337 73.2004C281.071 77.8671 278.938 84.4004 278.938 92.8004V144
+    H250.938Z" fill="#1C95FF"/>
+  <path d="M174.6 146.4C167.267 146.4 160.933 145.067 155.6 142.4
+    C150.267 139.734 146.133 136.134 143.2 131.6C140.4 127.067 139
+    122.067 139 116.6C139 106.334 142.667 98.4004 150 92.8004C157.467
+    87.0671 167.2 84.2004 179.2 84.2004C184.933 84.2004 189.8 84.6004
+    193.8 85.4004C197.933 86.2004 201.267 87.0004 203.8 87.8004V83.0004
+    C203.8 76.4671 201.867 71.7337 198 68.8004C194.267 65.8671 189.467
+    64.4004 183.6 64.4004C179.6 64.4004 176 65.2004 172.8 66.8004
+    C169.6 68.4004 167.533 71.3337 166.6 75.6004H140.4C141.2 68.5337
+    143.533 62.5337 147.4 57.6004C151.4 52.6671 156.533 48.9337 162.8
+    46.4004C169.067 43.7337 176 42.4004 183.6 42.4004C198.533 42.4004
+    210.267 45.9337 218.8 53.0004C227.467 59.9337 231.8 69.9337 231.8
+    83.0004V103.6C231.8 108.667 232.067 112.467 232.6 115C233.267 117.4
+    234.267 118.934 235.6 119.6C236.933 120.267 238.667 120.6 240.8
+    120.6H241.6V144H235.4C228.2 144 222.2 143.134 217.4 141.4C212.6
+    139.534 209.067 136 206.8 130.8C203.333 135.334 198.867 139.067
+    193.4 142C187.933 144.934 181.667 146.4 174.6 146.4ZM181.2 125.2
+    C185.067 125.2 188.333 124.4 191 122.8C193.8 121.067 196.133 118.734
+    198 115.8C199.867 112.734 201.267 109.334 202.2 105.6C199.533 104.8
+    196.4 104.067 192.8 103.4C189.333 102.6 185.8 102.2 182.2 102.2
+    C178.067 102.2 174.533 103.267 171.6 105.4C168.667 107.4 167.2
+    110.334 167.2 114.2C167.2 117.4 168.467 120.067 171 122.2C173.533
+    124.2 176.933 125.2 181.2 125.2Z" fill="#1C95FF"/>
+</svg>"""
+
 PAGES = [
     {"path": "pages/0_intro.py",         "label": "Intro"},
     {"path": "pages/2_fill_form.py",     "label": "Fill Form"},
@@ -16,8 +83,8 @@ FLOW = ["Intro", "Fill Form", "Form Overview", "Results", "Compare"]
 ORDER = FLOW
 
 
-ACCENT = "#2B85E4"
-ACCENT_HOVER = "#186FD3"
+ACCENT = "#1C95FF"
+ACCENT_HOVER = "#0B80E8"
 
 GLOBAL_CSS = f"""
 <style>
@@ -49,20 +116,23 @@ GLOBAL_CSS = f"""
     background-color: {ACCENT} !important;
     text-decoration: none !important;
   }}
+  /* Shared page heading / subtitle classes */
+  .page-title    {{ font-size: 1.375rem; font-weight: 700; margin: 0 0 0.2rem; }}
+  .page-subtitle {{ font-size: 0.875rem; color: #6B7280; margin: 0 0 1rem; line-height: 1.5; }}
   /* Secondary form-submit → orange (Compare Startups action) */
   div[data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"] {{
-    background-color: #F97316 !important;
+    background-color: #F87F19 !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 16px !important;
     padding: 0.9rem 2rem !important;
     font-size: 1rem !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 14px rgba(249,115,22,0.35) !important;
+    box-shadow: 0 4px 14px rgba(248,127,25,0.35) !important;
   }}
   div[data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"]:hover {{
-    background-color: #EA6E0B !important;
-    box-shadow: 0 6px 20px rgba(234,110,11,0.45) !important;
+    background-color: #E07010 !important;
+    box-shadow: 0 6px 20px rgba(224,112,16,0.45) !important;
   }}
 </style>
 """
@@ -106,3 +176,163 @@ def render_navigation(current: str, show_breadcrumb: bool = True):
                 )
 
     st.divider()
+
+
+def render_page_navbar(
+    current: str,
+    steps: list,
+    progress_pct: int,
+    display_name: str = None,
+    back_page: str = None,
+    back_label: str = "← Edit",
+):
+    """
+    Fixed top navbar with logo, breadcrumb (st.page_link for SPA navigation),
+    and an optional back button.  Pass back_page as a PAGES label (e.g. "Fill Form").
+    Also injects shared button CSS and manages nav_stack, replacing render_navigation.
+    """
+    # ── Nav-stack management (mirrors render_navigation logic) ────────────────
+    if "nav_stack" not in st.session_state:
+        st.session_state.nav_stack = []
+    stack = st.session_state.nav_stack
+    if not stack or stack[-1] != current:
+        if current in stack:
+            stack[:] = stack[: stack.index(current) + 1]
+        else:
+            cur_i  = ORDER.index(current)    if current  in ORDER else -1
+            last_i = ORDER.index(stack[-1])  if stack and stack[-1] in ORDER else -1
+            if cur_i >= 0 and last_i >= 0 and cur_i == last_i + 1:
+                stack.append(current)
+            else:
+                stack[:] = [current]
+
+    display = display_name or current
+    back_url = URL_BY_LABEL.get(back_page, "#") if back_page else None
+    back_btn = (
+        f'<a href="/{back_url}" target="_self" class="ssp-back-btn">{back_label}</a>'
+        if back_url else ""
+    )
+
+    st.markdown(
+        f"""
+        <style>
+          [data-testid="stHeader"]  {{ display: none !important; }}
+          [data-testid="stToolbar"] {{ display: none !important; }}
+          [data-testid="stDivider"] {{ display: none !important; }}
+          /* Default wide-card layout — pages may override below */
+          .block-container {{
+            max-width: calc(100% - 160px) !important;
+            margin: 115px auto 2rem !important;
+            padding: 2rem 2.5rem !important;
+            background: #ffffff !important;
+            border-radius: 16px !important;
+            border: 1px solid #E5E7EB !important;
+            box-shadow:
+              0 4px 6px -1px rgba(0,0,0,0.07),
+              0 2px 4px -1px rgba(0,0,0,0.04) !important;
+          }}
+          /* Navbar shell */
+          .ssp-navbar {{
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            background: #ffffff; border-bottom: 1px solid #E5E7EB;
+            display: flex; align-items: center; padding: 0 80px;
+            z-index: 9999; gap: 32px;
+          }}
+          .ssp-navbar svg {{ height: 28px; width: auto; flex-shrink: 0; }}
+          /* Back button */
+          .ssp-back-btn {{
+            margin-left: auto; padding: 6px 16px;
+            border: 1px solid #E5E7EB; border-radius: 8px;
+            background: #ffffff; font-size: 13px; font-weight: 500;
+            color: #374151 !important; text-decoration: none !important;
+            flex-shrink: 0; transition: background 0.15s; white-space: nowrap;
+          }}
+          .ssp-back-btn:hover {{
+            background: #F9FAFB !important; color: #111827 !important;
+          }}
+          /* Progress strip rendered as pseudo-element to avoid extra HTML */
+          .ssp-navbar::after {{
+            content: '';
+            position: fixed; top: 56px; left: 0; right: 0; z-index: 9998;
+            height: 3px;
+            background: linear-gradient(
+              to right,
+              {ACCENT} {progress_pct}%,
+              #E5E7EB {progress_pct}%
+            );
+          }}
+          /* Pull the breadcrumb columns row into the navbar center via :has() */
+          [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"]) {{
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; right: 0 !important;
+            height: 56px !important; z-index: 10000 !important;
+            display: flex !important; align-items: center !important;
+            justify-content: center !important;
+            background: transparent !important;
+            max-width: none !important;
+            padding: 0 !important; margin: 0 !important; gap: 0 !important;
+            pointer-events: none !important;
+          }}
+          [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"]) > div {{
+            flex: 0 0 auto !important; width: auto !important;
+            min-width: 0 !important; padding: 0 !important;
+            pointer-events: auto !important;
+          }}
+          /* Breadcrumb link style */
+          [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"])
+            [data-testid="stPageLink"] {{
+            background: transparent !important; border: none !important;
+            padding: 0 !important; margin: 0 !important;
+          }}
+          [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"])
+            [data-testid="stPageLink"] p {{
+            font-size: 12px !important; color: #9CA3AF !important;
+            text-decoration: none !important; padding: 3px 6px !important;
+            margin: 0 !important; font-family: inherit !important;
+          }}
+          [data-testid="stHorizontalBlock"]:has([data-testid="stPageLink"])
+            [data-testid="stPageLink"]:hover p {{
+            color: #374151 !important;
+          }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Navbar shell: logo + optional back button (progress bar via CSS ::after)
+    st.markdown(
+        f'<div class="ssp-navbar">{LOGO_SVG}{back_btn}</div>',
+        unsafe_allow_html=True,
+    )
+
+    # Breadcrumb using st.page_link() — CSS above floats this row into the navbar
+    n = len(steps)
+    col_weights = []
+    for i in range(n):
+        col_weights.append(4)
+        if i < n - 1:
+            col_weights.append(1)
+
+    cols = st.columns(col_weights)
+    for i, step in enumerate(steps):
+        step_display = display if step == current else step
+        with cols[i * 2]:
+            if step == current:
+                st.markdown(
+                    f'<span style="font-size:12px;color:#1C95FF;font-weight:600;'
+                    f'padding:3px 6px;display:inline-flex;align-items:center">'
+                    f'{step_display}</span>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.page_link(PATH_BY_LABEL[step], label=step)
+        if i < n - 1:
+            with cols[i * 2 + 1]:
+                st.markdown(
+                    '<span style="color:#9CA3AF;font-size:14px;display:flex;'
+                    'align-items:center;justify-content:center">›</span>',
+                    unsafe_allow_html=True,
+                )
+
+    # Shared button / link styles (same as GLOBAL_CSS in render_navigation)
+    st.markdown(GLOBAL_CSS, unsafe_allow_html=True)

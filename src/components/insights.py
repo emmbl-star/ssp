@@ -4,7 +4,7 @@ from utils.add_info_nof import add_info, EnrichRequest
 
 def render_insights(payload: dict, result: dict):
     st.divider()
-    st.subheader("📊 Company Insights")
+    st.subheader("Company insights")
 
     with st.spinner("Fetching insights..."):
         req = EnrichRequest(

@@ -2,7 +2,7 @@
 # Displays verdict, key metrics, gauge chart, and feature importance chart.
 import streamlit as st
 from src.charts.gauge_chart import gauge_chart
-from src.charts.feature_chart import feature_chart
+from src.charts.outcome_chart import outcome_chart
 
 
 OUTCOME_META = {
@@ -15,18 +15,15 @@ OUTCOME_META = {
 
 
 def render_results(result: dict, payload: dict):
-    predicted = result["predicted_class"]
+    predicted  = result["predicted_class"]
     confidence = result["confidence"]
-    features   = result["top_features"]
 
     label, icon, _ = OUTCOME_META.get(predicted, OUTCOME_META["Unknown"])
 
     st.divider()
     st.subheader(f"Results: {payload['company_name']}")
 
-    m1, m2 = st.columns(2)
-    m1.metric("Predicted Outcome", label)
-    m2.metric("Model Confidence",  f"{confidence:.1%}")
+    st.metric("Predicted Outcome", label)
 
     st.markdown("")
 
@@ -34,4 +31,4 @@ def render_results(result: dict, payload: dict):
     with ch1:
         st.plotly_chart(gauge_chart(confidence), use_container_width=True)
     with ch2:
-        st.plotly_chart(feature_chart(features), use_container_width=True)
+        st.plotly_chart(outcome_chart(result.get("all_probabilities", {})), use_container_width=True)

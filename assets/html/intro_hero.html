@@ -1,3 +1,45 @@
+<style>
+  [data-testid="stHeader"] {
+    background: #ffffff !important;
+    border-bottom: 1px solid #E5E7EB !important;
+  }
+  [data-testid="stMain"],
+  [data-testid="stAppViewContainer"] > section.main,
+  .stMain {
+    background: linear-gradient(to right, #B8E5FF 0%, #5BB5F0 100%) !important;
+  }
+  [data-testid="stSidebar"] {
+    background: rgba(255,255,255,0.25) !important;
+    backdrop-filter: blur(8px);
+  }
+  .block-container { padding: 2rem 0 0 0; max-width: 100%; }
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:first-child {
+    padding-left: 17.6% !important;
+  }
+  [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:last-child {
+    padding-left: 1% !important;
+    padding-right: 5% !important;
+  }
+  [data-testid="stHorizontalBlock"] {
+    align-items: center !important;
+    min-height: calc(80vh - 6rem) !important;
+  }
+  [data-testid="stDivider"] { display: none !important; }
+  div[data-testid="stButton"] button[kind="primary"] {
+    background-color: #ffffff !important;
+    color: #1a1a2e !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 0.85rem 2.4rem !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12) !important;
+  }
+  div[data-testid="stButton"] button[kind="primary"]:hover {
+    background-color: #f0f0f0 !important;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18) !important;
+  }
+</style>
 <div class="intro-hero__brand">
   <svg class="intro-hero__logo" viewBox="0 0 674 147" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Handful logo">
     <path d="M39.9996 126C39.9996 114.955 31.0454 106 19.9998 106C8.95422 106 0 114.955 0 126C0 137.046 8.95422 146 19.9998 146C31.0454 146 39.9996 137.046 39.9996 126Z" fill="#ffffff"/>

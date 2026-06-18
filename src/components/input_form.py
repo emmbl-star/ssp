@@ -4,8 +4,7 @@ import streamlit as st
 
 
 def render_input_form(ef: dict, industries: list, countries: list, states: list):
-    st.subheader("Company Profile")
-
+    st.subheader("Review company profile")
     with st.form("prediction_form"):
         col1, col2, col3 = st.columns(3)
 
@@ -61,11 +60,11 @@ def render_input_form(ef: dict, industries: list, countries: list, states: list)
             btn_l, btn_r = st.columns(2)
             with btn_l:
                 compare_clicked = st.form_submit_button(
-                    "🔍  Compare Startups", use_container_width=True
+                    "Compare startups", use_container_width=True
                 )
             with btn_r:
                 predict_clicked = st.form_submit_button(
-                    "⚡  Predict Success", use_container_width=True, type="primary"
+                    "Predict success", use_container_width=True, type="primary"
                 )
 
     if not (compare_clicked or predict_clicked):
