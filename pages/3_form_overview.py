@@ -5,7 +5,7 @@ import streamlit as st
 from utils.categorical_lists import industries, countries, states
 from src.components.input_form import render_input_form
 from src.components.voice_input import render_voice_input
-from src.components.navigation import render_navigation, PATH_BY_LABEL, FLOW, URL_BY_LABEL
+from src.components.navigation import render_navigation, render_page_navbar, PATH_BY_LABEL, FLOW
 
 ASSETS = Path(__file__).parent.parent / "assets"
 
