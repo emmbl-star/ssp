@@ -15,7 +15,7 @@ def gauge_chart(probability: float):
         mode="gauge+number",
         value=round(probability * 100, 1),
         number={"suffix": "%", "font": {"size": 40}},
-        title={"text": "Success Probability", "font": {"size": 18}},
+        title={"text": "Model Confidence", "font": {"size": 18}},
         gauge={
             "axis": {"range": [0, 100], "tickwidth": 1},
             "bar":  {"color": bar_color, "thickness": 0.3},

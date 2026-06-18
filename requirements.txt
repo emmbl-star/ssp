@@ -11,3 +11,4 @@ streamlit
 bs4
 fastapi
 pydantic
+xgboost

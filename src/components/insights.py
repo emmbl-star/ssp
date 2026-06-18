@@ -9,8 +9,8 @@ def render_insights(payload: dict, result: dict):
     with st.spinner("Fetching insights..."):
         req = EnrichRequest(
             company=payload["company_name"],
-            success=1 if result["success_probability"] >= 0.5 else 0,
-            probability=int(result["success_probability"] * 100),
+            success=1 if result["predicted_class"] == "Operating" else 0,
+            probability=int(result["confidence"] * 100),
         )
         insights = add_info(req)
 

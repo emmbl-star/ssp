@@ -1,20 +1,18 @@
 import streamlit as st
 
 PAGES = [
-    {"path": "app.py",                   "label": "Home"},
     {"path": "pages/0_intro.py",         "label": "Intro"},
     {"path": "pages/2_fill_form.py",     "label": "Fill Form"},
     {"path": "pages/3_form_overview.py", "label": "Form Overview"},
     {"path": "pages/5_results.py",       "label": "Results"},
-    # side pages — accessible via sidebar but not in the main drill-down flow
-    {"path": "pages/4_Compare.py",       "label": "Compare"},
-    {"path": "pages/5_results_v2.py",    "label": "Results V2"},
-    {"path": "pages/6_app_results.py",   "label": "Results & Insights"},
+    {"path": "pages/4_compare.py",        "label": "Compare"},
 ]
 PATH_BY_LABEL = {page["label"]: page["path"] for page in PAGES}
+# URL slug derived from page title (Streamlit st.Page default: lowercase, spaces → underscores)
+URL_BY_LABEL = {page["label"]: page["label"].lower().replace(" ", "_") for page in PAGES}
 
 # Only the main user flow — drives the › drill-down button
-FLOW = ["Home", "Intro", "Fill Form", "Form Overview", "Results"]
+FLOW = ["Intro", "Fill Form", "Form Overview", "Results", "Compare"]
 ORDER = FLOW
 
 
@@ -45,15 +43,32 @@ GLOBAL_CSS = f"""
   div[data-testid="stTabs"] button[aria-selected="true"] {{
     border-bottom-color: {ACCENT} !important;
     color: {ACCENT} !important;
+    text-decoration: none !important;
   }}
   div[data-testid="stProgress"] > div > div {{
     background-color: {ACCENT} !important;
+    text-decoration: none !important;
+  }}
+  /* Secondary form-submit → orange (Compare Startups action) */
+  div[data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"] {{
+    background-color: #F97316 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 0.9rem 2rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 14px rgba(249,115,22,0.35) !important;
+  }}
+  div[data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"]:hover {{
+    background-color: #EA6E0B !important;
+    box-shadow: 0 6px 20px rgba(234,110,11,0.45) !important;
   }}
 </style>
 """
 
 
-def render_navigation(current: str):
+def render_navigation(current: str, show_breadcrumb: bool = True):
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
     # Track navigation stack in session state
     if "nav_stack" not in st.session_state:
@@ -62,17 +77,17 @@ def render_navigation(current: str):
 
     if not stack or stack[-1] != current:
         if current in stack:
-            # navigating back — trim to this point
             stack[:] = stack[: stack.index(current) + 1]
         else:
             current_idx = ORDER.index(current) if current in ORDER else -1
             last_idx = ORDER.index(stack[-1]) if stack and stack[-1] in ORDER else -1
             if current_idx >= 0 and last_idx >= 0 and current_idx == last_idx + 1:
-                # natural one-step forward — append
                 stack.append(current)
             else:
-                # jumped via sidebar or skipped steps — reset
                 stack[:] = [current]
+
+    if not show_breadcrumb:
+        return
 
     # Breadcrumb strip — only render when there is a trail to show
     if len(stack) > 1:
