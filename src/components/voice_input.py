@@ -7,10 +7,9 @@ from src.services.field_extractor import extract_fields
 
 def render_voice_input(col, industries: list, countries: list, states: list):
     with col:
-        st.subheader("🎙️ Voice Input")
-        st.caption("Record your startup description including information about the name, foundation year, location, funding, and industry.")
+        st.caption("Record your startup description including information about the name, foundation year, location, <br> funding, and industry.", unsafe_allow_html=True)
 
-        audio = st.audio_input("Record your startup description")
+        audio = st.audio_input("")
 
         if audio:
             audio_bytes = audio.read()

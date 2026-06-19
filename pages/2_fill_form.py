@@ -10,7 +10,7 @@ from src.components.navigation import render_page_navbar, PATH_BY_LABEL, FLOW
 ASSETS = Path(__file__).parent.parent / "assets"
 
 # ── Progress: Fill Form is step 2 of 4 in the flow ───────────────────────────
-_CURRENT = "Fill Form"
+_CURRENT = "Startup Picker"
 _STEP = FLOW.index(_CURRENT) + 1   # 2
 _TOTAL = len(FLOW)                  # 4
 _PROGRESS_PCT = int(_STEP / _TOTAL * 100)  # 50
@@ -61,8 +61,8 @@ INDUSTRIES, COUNTRIES, STATES = industries(), countries(), states()
 if st.session_state.fill_mode is None:
     st.markdown(
         """
-        <h2 class="page-title">Choose input</h2>
-        <p class="page-subtitle">Select how you want to provide input. You can switch modes anytime.</p>
+        <h2 class="page-title">Pick your startup</h2>
+        <p class="page-subtitle">How do you want to find businesses? Write your idea or just speak about it!.</p>
         """,
         unsafe_allow_html=True,
     )
@@ -77,12 +77,12 @@ if st.session_state.fill_mode is None:
                   <span style="font-size:26px;font-weight:700;color:#1C95FF;
                                font-family:system-ui,sans-serif;">T</span>
                 </div>
-                <div class="mode-card-title">Text input</div>
+                <div class="mode-card-title">Write your idea</div>
                 <div class="mode-card-desc">Type your prompt and run it immediately.</div>
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button("Select text input →", key="sel_text", use_container_width=True):
+            if st.button("Write →", key="sel_text", use_container_width=True):
                 st.session_state.fill_mode = "text"
                 st.rerun()
 
@@ -100,33 +100,33 @@ if st.session_state.fill_mode is None:
                     <line x1="8" y1="22" x2="16" y2="22"/>
                   </svg>
                 </div>
-                <div class="mode-card-title">Voice input</div>
-                <div class="mode-card-desc">Speak your prompt and see the result.</div>
+                <div class="mode-card-title">Speak your mind</div>
+                <div class="mode-card-desc">Use your voice to find your startup.</div>
                 """,
                 unsafe_allow_html=True,
             )
-            if st.button("Select voice input →", key="sel_voice", use_container_width=True):
+            if st.button("Speak →", key="sel_voice", use_container_width=True):
                 st.session_state.fill_mode = "voice"
                 st.rerun()
 
 # ── Text Input mode ───────────────────────────────────────────────────────────
 elif st.session_state.fill_mode == "text":
-    st.markdown('<h2 class="page-title">Text Input</h2>', unsafe_allow_html=True)
-    if st.button("← Switch mode", key="back_text"):
+    st.markdown('<h2 class="page-title">Write your idea</h2>', unsafe_allow_html=True)
+    if st.button("← Speak", key="back_text"):
         st.session_state.fill_mode = None
         st.rerun()
     looked_up = render_autofill(st.container(), INDUSTRIES, COUNTRIES, STATES)
     if looked_up:
-        st.switch_page(PATH_BY_LABEL["Form Overview"])
+        st.switch_page(PATH_BY_LABEL["Startup Profile"])
 
 # ── Voice Input mode ──────────────────────────────────────────────────────────
 elif st.session_state.fill_mode == "voice":
-    st.markdown('<h2 class="page-title">Voice input</h2>', unsafe_allow_html=True)
-    if st.button("← Switch mode", key="back_voice"):
+    st.markdown('<h2 class="page-title">Speak your mind</h2>', unsafe_allow_html=True)
+    if st.button("← Write", key="back_voice"):
         st.session_state.fill_mode = None
         st.rerun()
     render_voice_input(st.container(), INDUSTRIES, COUNTRIES, STATES)
     if st.session_state.get("extracted_fields"):
         if st.button("Review form →", key="voice_continue", type="primary",
                      use_container_width=True):
-            st.switch_page(PATH_BY_LABEL["Form Overview"])
+            st.switch_page(PATH_BY_LABEL["Startup Profile"])

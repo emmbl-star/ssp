@@ -8,16 +8,16 @@ from src.services.field_extractor import extract_fields
 def render_autofill(col, industries: list, countries: list, states: list) -> bool:
     looked_up = False
     with col:
-        st.subheader("🔍 Company Autofill")
-        st.caption("Type a company name to look up its public profile.")
+        st.subheader("")
+        st.caption("Type a startup name to look up its public profile.")
 
-        autofill_query = st.text_input("Company name", placeholder="e.g. Airbnb")
+        autofill_query = st.text_input("", placeholder="e.g. Airbnb")
         if st.button("Look up", use_container_width=True):
             if not autofill_query:
-                st.warning("Enter a company name first.")
+                st.warning("Enter a startup name first.")
             else:
                 try:
-                    with st.spinner("Fetching company data..."):
+                    with st.spinner("Fetching startup data..."):
                         autofill_result = build_startup_profile(autofill_query)
                         profile = autofill_result.get("profile", {})
                         profile_str = (

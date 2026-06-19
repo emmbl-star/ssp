@@ -325,7 +325,12 @@ def add_info(data: EnrichRequest) -> dict:
     risks = derive_risks(infobox.get("industry"), data.probability)
     recommendations = derive_recommendations(data.company, infobox.get("industry"), data.probability)
 
-    # 7. Final response
+    # 7. Sources
+    sources = []
+    if title:
+        sources.append(f"https://en.wikipedia.org/wiki/{title.replace(' ', '_')}")
+
+    # 8. Final response
     return {
         "company": data.company,
         "success": data.success,
@@ -354,4 +359,5 @@ def add_info(data: EnrichRequest) -> dict:
             f"{data.company} shows potential with an estimated {data.probability}% likelihood of success, "
             f"based on its industry positioning and qualitative signals."
         ),
+        "sources": sources,
     }

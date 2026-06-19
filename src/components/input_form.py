@@ -71,17 +71,7 @@ def render_input_form(ef: dict, industries: list, countries: list, states: list)
         st.number_input("Total Funding Raised ($M)", min_value=0.0, max_value=50000.0, step=0.5, key="frm_funding_total")
         st.slider("Funding Rounds", 0, 20, key="frm_funding_rounds")
 
-        st.markdown("")
-        btn_l, btn_r = st.columns(2)
-        with btn_l:
-            compare = st.button("🔍  Compare Startups", use_container_width=True)
-        with btn_r:
-            predict = st.button("⚡  Predict Success", use_container_width=True, type="primary")
-
-    if not (compare or predict):
-        return None, {}
-
-    payload = {
+    return {
         "company_name":       str(st.session_state.frm_company_name),
         "category_list":      str(st.session_state.frm_industry),
         "funding_total_usd":  float(st.session_state.frm_funding_total) * 1_000_000,
@@ -92,4 +82,3 @@ def render_input_form(ef: dict, industries: list, countries: list, states: list)
         "first_funding_year": int(st.session_state.frm_first_funding_year),
         "last_funding_year":  int(st.session_state.frm_last_funding_year),
     }
-    return "compare" if compare else "predict", payload

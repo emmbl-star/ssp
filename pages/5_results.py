@@ -8,7 +8,7 @@ from src.components.results import render_results
 from src.services.predictor import get_prediction
 from utils.model_utils import load_ml_model
 
-_CURRENT = "Results"
+_CURRENT = "Decision Center"
 _STEP = FLOW.index(_CURRENT) + 1   # 4
 _TOTAL = len(FLOW)                  # 4
 _PROGRESS_PCT = int(_STEP / _TOTAL * 100)  # 100

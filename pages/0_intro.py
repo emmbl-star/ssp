@@ -4,7 +4,7 @@ import streamlit as st
 
 from src.components.navigation import render_navigation, PATH_BY_LABEL
 
-render_navigation("Intro")
+render_navigation("Home")
 
 ASSETS = Path(__file__).parent.parent / "assets"
 
@@ -29,4 +29,4 @@ with col_desc:
         unsafe_allow_html=True,
     )
     if st.button("Get your score  →", key="intro_cta", type="primary"):
-        st.switch_page(PATH_BY_LABEL["Fill Form"])
+        st.switch_page(PATH_BY_LABEL["Startup Picker"])

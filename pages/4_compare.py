@@ -6,8 +6,8 @@ from src.services.predictor import CLASS_LABELS
 from utils.categorical_lists import industries, countries, states
 from src.components.navigation import render_page_navbar
 
-_CURRENT = "Compare"
-_CRUMB_STEPS = ["Intro", "Fill Form", "Form Overview", "Compare"]
+_CURRENT = "Portfolio Builder"
+_CRUMB_STEPS = ["Home", "Startup Picker", "Startup Profile", "Portfolio Builder"]
 _PROGRESS_PCT = 100
 
 render_page_navbar(_CURRENT, _CRUMB_STEPS, _PROGRESS_PCT)

@@ -68,18 +68,18 @@ LOGO_SVG = """<svg viewBox="0 0 674 147" fill="none" xmlns="http://www.w3.org/20
 </svg>"""
 
 PAGES = [
-    {"path": "pages/0_intro.py",         "label": "Intro"},
-    {"path": "pages/2_fill_form.py",     "label": "Fill Form"},
-    {"path": "pages/3_form_overview.py", "label": "Form Overview"},
-    {"path": "pages/5_results.py",       "label": "Results"},
-    {"path": "pages/4_compare.py",        "label": "Compare"},
+    {"path": "pages/0_intro.py",         "label": "Home"},
+    {"path": "pages/2_fill_form.py",     "label": "Startup Picker"},
+    {"path": "pages/3_form_overview.py", "label": "Startup Profile"},
+    {"path": "pages/5_results.py",       "label": "Decision Center"},
+    {"path": "pages/4_compare.py",        "label": "Portfolio Builder"},
 ]
 PATH_BY_LABEL = {page["label"]: page["path"] for page in PAGES}
 # URL slug derived from page title (Streamlit st.Page default: lowercase, spaces → underscores)
 URL_BY_LABEL = {page["label"]: page["label"].lower().replace(" ", "_") for page in PAGES}
 
 # Only the main user flow — drives the › drill-down button
-FLOW = ["Intro", "Fill Form", "Form Overview", "Results", "Compare"]
+FLOW = ["Home", "Startup Picker", "Startup Profile", "Decision Center", "Portfolio Builder"]
 ORDER = FLOW
 
 
@@ -119,6 +119,41 @@ GLOBAL_CSS = f"""
   /* Shared page heading / subtitle classes */
   .page-title    {{ font-size: 1.375rem; font-weight: 700; margin: 0 0 0.2rem; }}
   .page-subtitle {{ font-size: 0.875rem; color: #6B7280; margin: 0 0 1rem; line-height: 1.5; }}
+  /* Text inputs — clean minimal box */
+  div[data-testid="stTextInput"] div[data-baseweb="input"],
+  div[data-testid="stNumberInput"] div[data-baseweb="input"] {{
+    background: #ffffff !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease !important;
+  }}
+  div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within,
+  div[data-testid="stNumberInput"] div[data-baseweb="input"]:focus-within {{
+    border-color: {ACCENT} !important;
+    box-shadow: 0 0 0 3px rgba(28,149,255,0.12) !important;
+  }}
+  div[data-testid="stTextInput"] input,
+  div[data-testid="stNumberInput"] input {{
+    color: #111827 !important;
+    font-size: 0.9rem !important;
+  }}
+  div[data-testid="stTextInput"] input::placeholder,
+  div[data-testid="stNumberInput"] input::placeholder {{
+    color: #9CA3AF !important;
+  }}
+  /* Selectbox — same clean style */
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:first-child {{
+    background: #ffffff !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease !important;
+  }}
+  div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:first-child:focus-within {{
+    border-color: {ACCENT} !important;
+    box-shadow: 0 0 0 3px rgba(28,149,255,0.12) !important;
+  }}
   /* Secondary form-submit → orange (Compare Startups action) */
   div[data-testid="stFormSubmitButton"] button[kind="secondaryFormSubmit"] {{
     background-color: #F87F19 !important;
