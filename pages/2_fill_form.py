@@ -62,7 +62,7 @@ if st.session_state.fill_mode is None:
     st.markdown(
         """
         <h2 class="page-title">Pick your startup</h2>
-        <p class="page-subtitle">How do you want to find businesses? Write your idea or just speak about it!.</p>
+        <p class="page-subtitle">Find startups your way — type it or say it out loud like you're telling a friend.</p>
         """,
         unsafe_allow_html=True,
     )

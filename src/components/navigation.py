@@ -85,6 +85,7 @@ ORDER = FLOW
 
 ACCENT = "#1C95FF"
 ACCENT_HOVER = "#0B80E8"
+ACCENT_ORANGE = "#F87F19"
 
 GLOBAL_CSS = f"""
 <style>
@@ -119,6 +120,8 @@ GLOBAL_CSS = f"""
   /* Shared page heading / subtitle classes */
   .page-title    {{ font-size: 1.375rem; font-weight: 700; margin: 0 0 0.2rem; }}
   .page-subtitle {{ font-size: 0.875rem; color: #6B7280; margin: 0 0 1rem; line-height: 1.5; }}
+  .page-lead     {{ font-size: 1.14rem; font-weight: 600; color: #111827; margin: 0 0 1rem; line-height: 1.4; }}
+  .page-title-xl {{ font-size: 2.5rem; font-weight: 800; color: #111827; margin: 0 0 24px 0; line-height: 1.2; }}
   /* Text inputs — clean minimal box */
   div[data-testid="stTextInput"] div[data-baseweb="input"],
   div[data-testid="stNumberInput"] div[data-baseweb="input"] {{
@@ -220,6 +223,7 @@ def render_page_navbar(
     display_name: str = None,
     back_page: str = None,
     back_label: str = "← Edit",
+    full_width: bool = False,
 ):
     """
     Fixed top navbar with logo, breadcrumb (st.page_link for SPA navigation),
@@ -371,3 +375,22 @@ def render_page_navbar(
 
     # Shared button / link styles (same as GLOBAL_CSS in render_navigation)
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+
+    if full_width:
+        st.markdown(
+            """
+            <style>
+              .stApp { background: #F9FAFB !important; }
+              .block-container {
+                max-width: 100% !important;
+                margin: 72px 0 0 !important;
+                padding: 64px !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+              }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )

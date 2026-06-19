@@ -18,7 +18,6 @@ _PROGRESS_PCT = int(_STEP / _TOTAL * 100)  # 75
 render_page_navbar(
     _CURRENT, FLOW, _PROGRESS_PCT,
     display_name="Company Profile",
-    back_page="Startup Picker",
 )
 
 # ── Page content ──────────────────────────────────────────────────────────────
@@ -39,7 +38,34 @@ payload = render_input_form(
     st.session_state.extracted_fields, INDUSTRIES, COUNTRIES, STATES
 )
 
-st.markdown("")
+st.markdown("""
+<style>
+div[data-testid="stColumn"]:not(:has(div[data-testid="stColumn"])) div[data-testid="stButton"] {
+    min-width: 0 !important;
+}
+div[data-testid="stColumn"]:not(:has(div[data-testid="stColumn"])) div[data-testid="stButton"] button {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: clamp(0.5rem, 1.1vw, 0.875rem) !important;
+    padding: clamp(0.3rem, 0.6vw, 0.55rem) clamp(0.6rem, 1.2vw, 1.25rem) !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 8px !important;
+}
+div[data-testid="stColumn"]:not(:has(div[data-testid="stColumn"])):nth-child(1) div[data-testid="stButton"] button {
+    background: white !important; color: #0B3C66 !important; border: 1px solid #e0e0e0 !important;
+}
+div[data-testid="stColumn"]:not(:has(div[data-testid="stColumn"])):nth-child(2) div[data-testid="stButton"] button {
+    background: #F87F19 !important; color: white !important; border: none !important;
+}
+div[data-testid="stColumn"]:not(:has(div[data-testid="stColumn"])):nth-child(3) div[data-testid="stButton"] button {
+    background: #1C95FF !important; color: white !important; border: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 _, btn_row  = st.columns([2, 1])
 with btn_row:
     b_voice, b_compare, b_predict = st.columns(3)
