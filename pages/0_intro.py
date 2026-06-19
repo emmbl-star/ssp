@@ -29,4 +29,5 @@ with col_desc:
         unsafe_allow_html=True,
     )
     if st.button("Get your score  →", key="intro_cta", type="primary"):
+        st.session_state.fill_mode = None
         st.switch_page(PATH_BY_LABEL["Startup Picker"])

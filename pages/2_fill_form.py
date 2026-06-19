@@ -15,6 +15,13 @@ _STEP = FLOW.index(_CURRENT) + 1   # 2
 _TOTAL = len(FLOW)                  # 4
 _PROGRESS_PCT = int(_STEP / _TOTAL * 100)  # 50
 
+# nav_stack still holds the previous page before render_page_navbar trims it —
+# if the user arrived from a later step, reset the mode selector.
+_LATER_PAGES = {"Startup Profile", "Decision Center", "Portfolio Builder"}
+_last_page = (st.session_state.get("nav_stack") or [""])[-1]
+if _last_page in _LATER_PAGES:
+    st.session_state.fill_mode = None
+
 render_page_navbar(_CURRENT, FLOW, _PROGRESS_PCT)
 
 # Override card width + mode-card styles specific to this page
@@ -126,7 +133,8 @@ elif st.session_state.fill_mode == "voice":
         st.session_state.fill_mode = None
         st.rerun()
     render_voice_input(st.container(), INDUSTRIES, COUNTRIES, STATES)
-    if st.session_state.get("extracted_fields"):
+    if st.session_state.get("pending_voice_update"):
         if st.button("Review form →", key="voice_continue", type="primary",
                      use_container_width=True):
+            st.session_state.extracted_fields = st.session_state.pending_voice_update
             st.switch_page(PATH_BY_LABEL["Startup Profile"])

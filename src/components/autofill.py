@@ -32,6 +32,7 @@ def render_autofill(col, industries: list, countries: list, states: list) -> boo
                         fields = extract_fields(profile_str, industries, countries, states)
                         fields["company_name"] = autofill_query
                         st.session_state.extracted_fields = fields
+                        st.session_state.pop("pending_voice_update", None)
                     looked_up = True
                 except Exception as e:
                     st.error(f"Look up failed: {e}")

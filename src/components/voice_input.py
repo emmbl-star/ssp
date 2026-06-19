@@ -32,5 +32,6 @@ def render_voice_input(col, industries: list, countries: list, states: list):
             st.success(f"**Transcript:** {st.session_state.transcript}")
             if st.button("Clear transcript"):
                 st.session_state.transcript = ""
-                st.session_state.extracted_fields = {}
+                st.session_state.last_audio_hash = None
+                st.session_state.pop("pending_voice_update", None)
                 st.rerun()

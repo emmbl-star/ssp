@@ -15,13 +15,34 @@ _FIELD_TO_KEY = {
     "funding_rounds":      ("frm_funding_rounds",      int),
 }
 
+_BACKUP_KEY = "_form_backup"
+
 
 def _ef_hash(ef: dict) -> str:
     return json.dumps(ef, sort_keys=True, default=str)
 
 
+def _save_form_backup():
+    """Persist frm_* values to a plain (non-widget) dict so they survive page navigation."""
+    st.session_state[_BACKUP_KEY] = {
+        key: st.session_state[key]
+        for _, (key, _) in _FIELD_TO_KEY.items()
+        if key in st.session_state
+    }
+
+
 def _init_form_state(ef: dict, industries: list, countries: list, states: list):
     if st.session_state.get("frm_ef_hash") == _ef_hash(ef):
+        # Hash matches, but Streamlit may have cleared widget keys when leaving the page.
+        # Restore from the backup so the form is not blank on return.
+        if "frm_company_name" not in st.session_state:
+            for _, (key, _) in _FIELD_TO_KEY.items():
+                backup_val = st.session_state.get(_BACKUP_KEY, {}).get(key)
+                if backup_val is not None:
+                    st.session_state[key] = backup_val
+        return
+    # Empty ef (e.g. after clearing transcript) must not wipe existing form data
+    if not ef and "frm_ef_hash" in st.session_state:
         return
     _c = ef.get("country")
     _s = ef.get("state_code")
@@ -71,7 +92,7 @@ def render_input_form(ef: dict, industries: list, countries: list, states: list)
         st.number_input("Total Funding Raised ($M)", min_value=0.0, max_value=50000.0, step=0.5, key="frm_funding_total")
         st.slider("Funding Rounds", 0, 20, key="frm_funding_rounds")
 
-    return {
+    result = {
         "company_name":       str(st.session_state.frm_company_name),
         "category_list":      str(st.session_state.frm_industry),
         "funding_total_usd":  float(st.session_state.frm_funding_total) * 1_000_000,
@@ -82,3 +103,7 @@ def render_input_form(ef: dict, industries: list, countries: list, states: list)
         "first_funding_year": int(st.session_state.frm_first_funding_year),
         "last_funding_year":  int(st.session_state.frm_last_funding_year),
     }
+
+    _save_form_backup()
+
+    return result
